@@ -100,10 +100,14 @@ instance : Stream (Subarray α) α where
 
 instance : Stream Std.Range Nat where
   next? r :=
-    if r.start < r.stop then
-      some (r.start, { r with start := r.start + r.step })
-    else
+    if r.step = 0 || r.start >= r.stop then
       none
+    else
+      let cur := r.initial
+      if r.ascending then
+        some (cur, {r with start := r.next! cur})
+      else
+        some (cur, {r with stop := r.next! cur})
 
 instance : Stream Substring Char where
   next? s :=
